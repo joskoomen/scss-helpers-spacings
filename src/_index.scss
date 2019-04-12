@@ -1,0 +1,79 @@
+@charset "UTF-8";
+
+$spacing-sides-classes-prefixes: (
+    't' : top,
+    'r' : right,
+    'b' : bottom,
+    'l' : left,
+    'x' : horizontal,
+    'y' : vertical
+) !default;
+
+$spacing-spaces: (0, 1, 2, 4, 8, 16, 20, 24, 32) !default;
+$helpers-spacings-margin-prefix: 'm' !default;
+$helpers-spacings-padding-prefix: 'p' !default;
+
+@mixin -jk-space-helper($value, $prefix, $breakpoint-prefix, $auto:false) {
+  $spaces: set-map($spacing-spaces);
+  
+  @each $space in $spacing-spaces {
+    
+    $val : $space;
+    @if is-number($space) {
+      $val: rem-calc($space);
+    }
+    
+    .#{$breakpoint-prefix}#{$prefix}-#{$space} {
+      #{$value} : #{$val} !important;
+    }
+    
+    @each $side in $spacing-sides-classes-prefixes {
+      $side-key: nth($side, 1);
+      $side-value: nth($side, 2);
+      
+      .#{$breakpoint-prefix}#{$prefix}#{$side-key}-#{$space} {
+        @if $side-key == x {
+          #{$value}-left: $val !important;
+          #{$value}-right: $val !important;
+        } @else if ($side-key == y) {
+          #{$value}-top: $val !important;
+          #{$value}-bottom: $val !important;
+        } @else {
+          #{$value}-#{$side-value} : $val !important;
+        }
+      }
+    }
+  }
+  
+  @if $auto {
+    .#{$breakpoint-prefix}#{$prefix}-x-auto {
+      #{$value}-left: auto !important;
+      #{$value}-right: auto !important;
+    }
+  }
+}
+
+@mixin -jk-space-helper-responsive($value, $type, $auto:false) {
+  @each $classname in $breakpoint-classes {
+    
+    @include breakpoint($classname) {
+      @include -jk-space-helper($value, $type, '#{$classname}-', $auto);
+    }
+  }
+}
+
+@mixin helpers-spacings-margin($responsive:false) {
+  @if $responsive {
+    @include -jk-space-helper-responsive(margin, $helpers-spacings-margin-prefix, true);
+  } @else {
+    @include -jk-space-helper(margin, $helpers-spacings-margin-prefix, '', true);
+  }
+}
+
+@mixin helpers-spacings-padding($responsive:false) {
+  @if $responsive {
+    @include -jk-space-helper-responsive(padding, $helpers-spacings-padding-prefix, true);
+  } @else {
+    @include -jk-space-helper(padding, $helpers-spacings-padding-prefix, '', true);
+  }
+}
