@@ -18,7 +18,7 @@ $helpers-spacings-padding-prefix: 'p' !default;
   
   @each $space in $spacing-spaces {
     
-    $val : $space;
+    $val: $space;
     @if is-number($space) {
       $val: rem-calc($space);
     }
@@ -55,6 +55,10 @@ $helpers-spacings-padding-prefix: 'p' !default;
 
 @mixin -jk-space-helper-responsive($value, $type, $auto:false) {
   @each $classname in $breakpoint-classes {
+    
+    @if $classname == $_jk-zero-breakpoint {
+      @include -jk-space-helper($value, $type, '', $auto);
+    }
     
     @include breakpoint($classname) {
       @include -jk-space-helper($value, $type, '#{$classname}-', $auto);
